@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  namespace: nginx-ns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      serviceAccountName: nginx-sa
+      containers:
+      - name: nginx
+        image: vrajakishorek/vk-nginx:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+        env:
+        - name: WELCOME_MSG
+          valueFrom:
+            configMapKeyRef:
+              name: nginx-config
+              key: WELCOME_MSG
+        - name: APP_KEY
+          valueFrom:
+            secretKeyRef:
+              name: nginx-secret
+              key: APP_KEY
